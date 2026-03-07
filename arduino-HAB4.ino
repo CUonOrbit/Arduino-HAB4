@@ -22,7 +22,7 @@ const unsigned long FLUSH_INTERVAL_MS = 5000UL;
 unsigned long lastFlushMs = 0;
 
 // Create module instance
-BMP280Module bmp280(0x76, 1013.25f, SENSOR_INTERVAL_MS);
+BMP280Module bmp280(0x77, 1013.25f, SENSOR_INTERVAL_MS);
 ThermistorModule thermistor(THERMISTOR_PIN);
 
 void setup() {

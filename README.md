@@ -26,9 +26,9 @@
 
 ### Wiring Diagram
 
-| Component | VCC | GND | SCL | SDA | CS  | SCK  | MOSI | MISO |
+| Component | VCC | GND | SCL | SDI | CS | SCK | MOSI | MISO |
 |-----------|-----|-----|-----|-----|-----|------|------|------|
-| **BMP280** | **5V** | **GND** | - | **A4** | **A5** | - | - | - |
+| **BMP280** | **5V** | **GND** | - | **A4** | - | **A5** | - | - |
 | **SD Card** | **5V** | **GND** | - | - | **D4** | **D13** | **D11** | **D12** |
 | **Relay** | **5V** | **GND** | - | - | **D7** | - | - | - |
 
