@@ -3,7 +3,7 @@
 #include "BMP280Module.h"
 #include "ThermistorModule.h"
 #include "config.h"
-
+#include "StatusLEDs.h"
 
 bool pulseStarted = false;  // Termination
 unsigned long startTime = 0;
@@ -25,6 +25,13 @@ unsigned long lastFlushMs = 0;
 BMP280Module bmp280(0x77, 1013.25f, SENSOR_INTERVAL_MS);
 ThermistorModule thermistor(THERMISTOR_PIN);
 
+// Status LED flags
+bool sdCardOK = false;
+bool bmp280OK = false;
+bool accelerometerOK = false; 
+
+int statusPins[] = {BMP_STATUS_LED_PIN, SD_CARD_STATUS_LED_PIN, ACCELEROMETER_STATUS_LED_PIN};
+
 void setup() {
   // REMINDER:
   // Resetting or disconnecting/reconnecting power
@@ -35,27 +42,27 @@ void setup() {
 
   Serial.begin(115200);
   //while (!Serial);      // remove when standalone
-
+  initStatusLEDs(statusPins, 3);
   delay(1000);
   Serial.println(F("Initialize BMP280 5Hz, SD Card"));
 
   // Track module initialization status
-  bool sdOK = initSDCard(SD_CS_PIN);
-  bool bmpOK = bmp280.begin();
+  sdCardOK = initSDCard(SD_CS_PIN);
+  bmp280OK = bmp280.begin();
 
 
-  if (!sdOK) Serial.println(F("SD card initialization failed."));
-  if (!bmpOK) Serial.println(F("BMP280 initialization failed."));
+  if (!sdCardOK) Serial.println(F("SD card initialization failed."));
+  if (!bmp280OK) Serial.println(F("BMP280 initialization failed."));
 
 
   Serial.print("SD Card status: ");
-  Serial.println(sdOK ? "Success" : "Failed");
+  Serial.println(sdCardOK ? "Success" : "Failed");
 
   Serial.print("BMP280 status: ");
-  Serial.println(bmpOK ? "Success" : "Failed");
+  Serial.println(bmp280OK ? "Success" : "Failed");
 
   
-  if (!sdOK || !bmpOK) {
+  if (!sdCardOK || !bmp280OK) {
     errorLedState = true;
   }
 
@@ -73,6 +80,9 @@ void loop(){
   // Error LED handling
   if (errorLedState) {
     digitalWrite(LED_BUILTIN, HIGH);
+    setStatusLED(BMP_STATUS_LED_PIN, bmp280OK);
+    setStatusLED(SD_CARD_STATUS_LED_PIN, sdCardOK);
+    setStatusLED(ACCELEROMETER_STATUS_LED_PIN, accelerometerOK);
   }
 
   // 5Hz sensor logging 
