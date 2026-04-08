@@ -26,11 +26,12 @@
 
 ### Wiring Diagram
 
-| Component | VCC | GND | SCL | SDI | CS | SCK | MOSI | MISO |
-|-----------|-----|-----|-----|-----|-----|------|------|------|
-| **BMP280** | **5V** | **GND** | - | **A4** | - | **A5** | - | - |
-| **SD Card** | **5V** | **GND** | - | - | **D4** | **D13** | **D11** | **D12** |
-| **Relay** | **5V** | **GND** | - | - | **D7** | - | - | - |
+| Component | VCC | GND | SDI/SDA | CS | SCK/SCL | MOSI | MISO |
+|-----------|-----|-----|---------|----|---------|------|------|
+| **BMP280** | **5V** | **GND** | **A4** | - | **A5** | - | - |
+| **MPU6050** | **5V** | **GND** | **A4** | - | **A5** | - | - |
+| **SD Card** | **5V** | **GND** | - | **D4** | **D13** | **D11** | **D12** |
+| **Relay** | **5V** | **GND** | - | **D7** | - | - | - |
 
 > **💡 Power**: 9V battery → **Arduino Arduino 9V DC power barrel jack** for standalone<br>
 > **USB** for PC testing only

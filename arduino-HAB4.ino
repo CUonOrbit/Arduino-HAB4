@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include "SDCardModule.h"
 #include "BMP280Module.h"
-#include "ThermistorModule.h"
+#include "MPU6050Module.h"
 #include "config.h"
 #include "StatusLEDs.h"
 
@@ -19,16 +19,16 @@ unsigned long lastSensorMs = 0;
 
 // flush every 5 seconds
 const unsigned long FLUSH_INTERVAL_MS = 5000UL; 
-unsigned long lastFlushMs = 0;
+unsigned long lastFlushMs = 0;  
 
 // Create module instance
 BMP280Module bmp280(0x77, 1013.25f, SENSOR_INTERVAL_MS);
-ThermistorModule thermistor(THERMISTOR_PIN);
+MPU6050Module mpu6050(0x68, SENSOR_INTERVAL_MS);
 
 // Status LED flags
 bool sdCardOK = false;
 bool bmp280OK = false;
-bool accelerometerOK = false; 
+bool mpu6050OK = false; 
 
 int statusPins[] = {BMP_STATUS_LED_PIN, SD_CARD_STATUS_LED_PIN, ACCELEROMETER_STATUS_LED_PIN};
 
@@ -44,25 +44,22 @@ void setup() {
   //while (!Serial);      // remove when standalone
   initStatusLEDs(statusPins, 3);
   delay(1000);
-  Serial.println(F("Initialize BMP280 5Hz, SD Card"));
 
   // Track module initialization status
   sdCardOK = initSDCard(SD_CS_PIN);
   bmp280OK = bmp280.begin();
+  mpu6050OK = mpu6050.begin();
 
-
-  if (!sdCardOK) Serial.println(F("SD card initialization failed."));
-  if (!bmp280OK) Serial.println(F("BMP280 initialization failed."));
-
-
-  Serial.print("SD Card status: ");
+  Serial.print(F("SD Card status: "));
   Serial.println(sdCardOK ? "Success" : "Failed");
 
-  Serial.print("BMP280 status: ");
+  Serial.print(F("BMP280 status: "));
   Serial.println(bmp280OK ? "Success" : "Failed");
 
-  
-  if (!sdCardOK || !bmp280OK) {
+  Serial.print(F("MPU6050 Status: "));
+  Serial.println(mpu6050OK ? "Success" : "Failed");
+
+  if (!sdCardOK || !bmp280OK || !mpu6050OK) {
     errorLedState = true;
   }
 
@@ -78,49 +75,51 @@ void loop(){
   unsigned long now = millis();
 
   // Error LED handling
-  if (errorLedState) {
-    digitalWrite(LED_BUILTIN, HIGH);
-    setStatusLED(BMP_STATUS_LED_PIN, bmp280OK);
-    setStatusLED(SD_CARD_STATUS_LED_PIN, sdCardOK);
-    setStatusLED(ACCELEROMETER_STATUS_LED_PIN, accelerometerOK);
-  }
+  digitalWrite(LED_BUILTIN, HIGH);
+  setStatusLED(BMP_STATUS_LED_PIN, bmp280OK);
+  setStatusLED(SD_CARD_STATUS_LED_PIN, sdCardOK);
+  setStatusLED(ACCELEROMETER_STATUS_LED_PIN, mpu6050OK);
 
   // 5Hz sensor logging 
   if (now - lastSensorMs >= SENSOR_INTERVAL_MS) {
     // Move the timestamp forward by exactly one interval
     lastSensorMs += SENSOR_INTERVAL_MS;
 
-    // BMP280 data
+    //BMP280 data
     if (bmp280.update()) {                     // will be true whenever it takes a new sample
-      const BMP280Reading &r = bmp280.getLastReading();
+      const BMP280Reading &rbmp = bmp280.getLastReading();
       String timestamp = getTimestamp();
       if (!bmp280.isValid()) {                // checks the last reading's pressure against the range (300-1100 hPa)
         String barometerLog = timestamp +
-                                "," + r.temperatureC +
-                                "," + r.pressureHpa +
-                                "(OOR)," + r.altitudeM +       // flag it as out-of-range
+                                "," + rbmp.temperatureC +
+                                "," + rbmp.pressureHpa +
+                                "(OOR)," + rbmp.altitudeM +       // flag it as out-of-range
                                 "(OOR)";  
         logToSDCard(barometerLog);
+        Serial.println("BMP: " + barometerLog);
       } else {
         String barometerLog = timestamp +
-                                "," + r.temperatureC +
-                                "," + r.pressureHpa +
-                                "," + r.altitudeM +
+                                ", Temp (C): " + String(rbmp.temperatureC) +
+                                ", Pressure (hPa): " + String(rbmp.pressureHpa) +
+                                ", Altitude (m): " + String(rbmp.altitudeM) +
                                 ",";
-        logToSDCard(barometerLog);                        
+        logToSDCard(barometerLog);
+        Serial.println("BMP: " + barometerLog);     
       }
-    } 
+    }
 
-    float boardTempC = thermistor.readTemperatureC();
-    if (thermistor.isValid(boardTempC)) {
-      String tempLog = thermistor.getLogString(boardTempC);
-      logToSDCard(tempLog + "\n");  // Logs to SD + Serial
-      Serial.print(","); 
-      Serial.print(boardTempC, 1);
-      Serial.println(F(""));
-    } else {
-      logToSDCard("BoardTemp: INVALID\n");
-      Serial.println(F("BoardTemp: INVALID"));
+    if (mpu6050.update()) {
+      const MPU6050Reading &rmpu = mpu6050.getLastReading();
+      String timestamp = getTimestamp();
+      String accelerometerLog = timestamp +
+                              ", Acceleration (x,y,z): " + String(rmpu.ax) +
+                              "," + String(rmpu.ay) +
+                              "," + String(rmpu.az) +
+                              ", Gyroscope (x,y,z): " + String(rmpu.gx) +
+                              "," + String(rmpu.gy) +
+                              "," + String(rmpu.gz);
+      logToSDCard(accelerometerLog);
+      Serial.println("MPU: " + accelerometerLog);
     }
 
     // Periodic SD flush
