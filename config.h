@@ -24,3 +24,5 @@
 #define BMP_STATUS_LED_PIN 6
 #define SD_CARD_STATUS_LED_PIN 7
 #define ACCELEROMETER_STATUS_LED_PIN 8
+
+#define POLLING_INTERVAL_MS 5000UL // 5Hz polling for sensors

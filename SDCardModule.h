@@ -6,14 +6,11 @@
 
 bool initSDCard(uint8_t csPin = 4);
 
-void logToSDCard(const String &data);
-
-void logErrorToSDCard(const String &message);
+void logData(const String &data);
+void logEvent(const String &message);
 
 void flushSD();
-
 void closeSD();
-
 String getTimestamp();
 
 #endif

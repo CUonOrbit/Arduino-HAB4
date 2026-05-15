@@ -11,14 +11,13 @@
 - **Time termination**: 30 minutes flight time
 - **Standalone operation** (9V lithium battery)
 - **Out-of-range detection** (>9km altitude warning)
-- **Arduino Uno R4** compatible
+- **Arduino Nano 33 IoT** compatible
 
 ## 🛠️ Hardware Requirements
 
 ### Required:
 | Component | Quantity |
 |-----------|----------|
-| [Arduino Uno R4](https://store.arduino.cc/products/uno-r4-minima) | 1 |
 | [BMP280 barometer](https://www.adafruit.com/product/2651) (I2C) | 1 |
 | SD card adapter + **32GB microSD** (FAT32) | 1 |
 | **9V lithium battery** | 1 |
@@ -32,6 +31,9 @@
 | **MPU6050** | **5V** | **GND** | **A4** | - | **A5** | - | - |
 | **SD Card** | **5V** | **GND** | - | **D4** | **D13** | **D11** | **D12** |
 | **Relay** | **5V** | **GND** | - | **D7** | - | - | - |
+| **BMP_STATUS_LED_PIN** | **D6** | **GND** | - | - | - | - | - |
+| **SD_CARD_STATUS_LED_PIN** | **D7** | **GND** | - | - | - | - | - |
+| **ACCELEROMETER_STATUS_LED_PIN** | **D8** | **GND** | - | - | - | - | - |
 
 > **💡 Power**: 9V battery → **Arduino Arduino 9V DC power barrel jack** for standalone<br>
 > **USB** for PC testing only
@@ -51,8 +53,11 @@
 - Adafruit BMP280 Library
 - Adafruit Unified Sensor
 - SD (built-in)
+- MPU6050 by Electronic Cats
+- FlashStorage_SAMD by Cristian Maglie
 
-3. Upload Arduino-HAB3.ino to Arduino Uno R4
+
+3. Upload Arduino-HAB3.ino to Arduino Nano 33 IoT
 
 4. Insert FAT32 formatted 32GB microSD card
 
