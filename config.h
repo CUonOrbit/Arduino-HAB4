@@ -8,7 +8,7 @@
 #define SCL_PIN    A5         
 
 // SD Card Module (SPI Pins - fixed on Uno)
-#define SD_CS_PIN         4           
+#define SD_CS_PIN         8           
 // (MOSI=11, MISO=12, SCK=13 are fixed in SPI)
 
 #define RELAY_PIN         5
@@ -21,8 +21,9 @@
 
 #define SEA_LEVEL_PRESSURE_HPA 1013.25f
 
-#define BMP_STATUS_LED_PIN 6
-#define SD_CARD_STATUS_LED_PIN 7
-#define ACCELEROMETER_STATUS_LED_PIN 8
+#define BMP_STATUS_LED_PIN 4
+#define SD_CARD_STATUS_LED_PIN 5
+#define ACCELEROMETER_STATUS_LED_PIN 6
+#define MISC_STATUS_LED_PIN 7
 
 #define POLLING_INTERVAL_MS 5000UL // 5Hz polling for sensors

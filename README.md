@@ -29,24 +29,12 @@
 |-----------|-----|-----|---------|----|---------|------|------|
 | **BMP280** | **5V** | **GND** | **A4** | - | **A5** | - | - |
 | **MPU6050** | **5V** | **GND** | **A4** | - | **A5** | - | - |
-| **SD Card** | **5V** | **GND** | - | **D4** | **D13** | **D11** | **D12** |
-| **Relay** | **5V** | **GND** | - | **D7** | - | - | - |
-| **BMP_STATUS_LED_PIN** | **D6** | **GND** | - | - | - | - | - |
-| **SD_CARD_STATUS_LED_PIN** | **D7** | **GND** | - | - | - | - | - |
-| **ACCELEROMETER_STATUS_LED_PIN** | **D8** | **GND** | - | - | - | - | - |
+| **SD Card** | **5V** | **GND** | - | **D8** | **D13** | **D11** | **D12** |
+| **BMP_STATUS_LED_PIN** | **D4** | **GND** | - | - | - | - | - |
+| **SD_CARD_STATUS_LED_PIN** | **D5** | **GND** | - | - | - | - | - |
+| **ACCELEROMETER_STATUS_LED_PIN** | **D6** | **GND** | - | - | - | - | - |
+| **SYSTEM_LED_PIN** | **D7** | **GND** | - | - | - | - | - |
 
-> **💡 Power**: 9V battery → **Arduino Arduino 9V DC power barrel jack** for standalone<br>
-> **USB** for PC testing only
-
-### ⚡Power Comsumtion 
-
-| Component      | Current |
-| -------------- | ------- |
-| Arduino Uno R4 | ~80mA   |
-| BMP280         | ~1mA    |
-| SD Card (avg)  | ~30mA   |
-| Total          | ~110mA  |
-> 9V Lithium (1000mAh): 5~9 hours flight time
 
 ## 🚀 Installation
 1. Install Libraries (Arduino IDE Library Manager):
@@ -72,16 +60,7 @@ Power:
 1. Power ON → BMP280 + SD init + Thermistor
 2. 5Hz logging → Data → SD card
 3. Every 5s → Buffer flush (safety)
-4. 30min → RELAY ON (D5 HIGH)
-5. +1min → RELAY OFF (cut-down done)
 
-### 📊 Expected Output
-
-Serial Monitor (115200 baud):
-- BMP280 status: Success ✅
-- SD Card status: Success ✅
-
-SD Card telemetery.csv file saved.
 
 ### 🆘 Troubleshooting
 | Symptom              | Cause             | Fix                              |
