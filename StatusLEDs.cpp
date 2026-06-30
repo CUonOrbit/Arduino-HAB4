@@ -10,5 +10,5 @@ void initStatusLEDs(int pins[], int numPins)
 
 void setStatusLED(int pin, bool status)
 {
-    digitalWrite(pin, status ? HIGH : LOW);
+    digitalWrite(pin, status ? LOW : HIGH);
 }
