@@ -7,6 +7,8 @@
 
 bool pulseStarted = false;  // Termination
 unsigned long startTime = 0;
+unsigned long lastSystemBlink = 0;
+const unsigned long SYSTEM_BLINK_INTERVAL = 10000UL;
 
 // LED blink timing
 const int errorBlinkInterval = 500; // milliseconds
@@ -36,7 +38,9 @@ void setup() {
   // restarts the 1-hour timer from zero.
   pinMode(RELAY_PIN, OUTPUT);          // NiCr output
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(MISC_STATUS_LED_PIN, OUTPUT); // Status LED output
   digitalWrite(RELAY_PIN, LOW);
+  digitalWrite(MISC_STATUS_LED_PIN, LOW); // initialize to low, only blink when all systems go
 
   Serial.begin(115200);
   //while (!Serial);      // remove when standalone
@@ -65,12 +69,29 @@ void setup() {
 void loop(){
   unsigned long now = millis();
 
+
   // Error LED handling
   digitalWrite(LED_BUILTIN, HIGH);
   setStatusLED(BMP_STATUS_LED_PIN, bmp280OK);
   setStatusLED(SD_CARD_STATUS_LED_PIN, sdCardOK);
   setStatusLED(ACCELEROMETER_STATUS_LED_PIN, mpu6050OK);
 
+  if(bmp280OK && sdCardOK && mpu6050OK){
+    if(now - lastSystemBlink >= SYSTEM_BLINK_INTERVAL){
+      lastSystemBlink = now;
+      digitalWrite(MISC_STATUS_LED_PIN, HIGH); // flash ON for 100 milliseconds
+      delay(100); // wiat 100ms
+      digitalWrite(MISC_STATUS_LED_PIN, LOW); // turn it back off
+      
+    }
+    else {
+      digitalWrite(MISC_STATUS_LED_PIN, LOW);
+    }
+  }
+  else {
+    digitalWrite(MISC_STATUS_LED_PIN, LOW);
+  }
+  
   // 5Hz sensor logging 
   if (now - lastSensorMs >= POLLING_INTERVAL_MS) {
     lastSensorMs += POLLING_INTERVAL_MS;
