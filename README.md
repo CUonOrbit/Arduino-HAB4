@@ -80,6 +80,5 @@ Power:
 ## ⚙️ Pin Configuration (`config.h`)
 
 ```cpp
-#define SD_CS_PIN          4
-#define RELAY_PIN          5
+#define SD_CS_PIN          8
 #define THERMISTOR_PIN    A0

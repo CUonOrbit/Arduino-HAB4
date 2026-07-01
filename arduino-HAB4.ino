@@ -8,7 +8,7 @@
 bool pulseStarted = false;  // Termination
 unsigned long startTime = 0;
 unsigned long lastSystemBlink = 0;
-const unsigned long SYSTEM_BLINK_INTERVAL = 10000UL;
+const unsigned long SYSTEM_BLINK_INTERVAL = 5000UL;
 
 // LED blink timing
 const int errorBlinkInterval = 500; // milliseconds
@@ -36,10 +36,8 @@ void setup() {
   // REMINDER:
   // Resetting or disconnecting/reconnecting power
   // restarts the 1-hour timer from zero.
-  pinMode(RELAY_PIN, OUTPUT);          // NiCr output
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(MISC_STATUS_LED_PIN, OUTPUT); // Status LED output
-  digitalWrite(RELAY_PIN, LOW);
   digitalWrite(MISC_STATUS_LED_PIN, LOW); // initialize to low, only blink when all systems go
 
   Serial.begin(115200);
@@ -47,6 +45,14 @@ void setup() {
   initStatusLEDs(statusPins, 3);
   delay(1000);
 
+  for (int i = 0; i < 3; i++) {
+    setStatusLED(statusPins[i], false);
+  }
+  digitalWrite(MISC_STATUS_LED_PIN, HIGH);
+  digitalWrite(LED_BUILTIN, HIGH);
+
+  delay(2000);
+  
   sdCardOK = initSDCard(SD_CS_PIN);
   bmp280OK = bmp280.begin();
   mpu6050OK = mpu6050.begin();
@@ -129,20 +135,6 @@ void loop(){
     if (now - lastFlushMs >= FLUSH_INTERVAL_MS) {
       lastFlushMs += FLUSH_INTERVAL_MS;
       flushSD();
-    }
-
-    // --- Step 1: Wait 1 hour ---
-    if (!pulseStarted && (millis() - startTime >= TERMINATION_TIME)) {
-      logEvent("TERMINATING FLIGHT");
-      digitalWrite(RELAY_PIN, HIGH);
-      pulseStarted = true;
-      startTime = millis();
-    }
-
-    // --- Step 2: Run NiCr for 1 minute then off ---
-    if (pulseStarted && (millis() - startTime >= TERMINATION_CUT_TIME)) {
-      digitalWrite(RELAY_PIN, LOW);
-      logEvent("FLIGHT TERMINATION COMPLETE");
     }
   }
 }

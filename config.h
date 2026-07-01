@@ -11,8 +11,6 @@
 #define SD_CS_PIN         8           
 // (MOSI=11, MISO=12, SCK=13 are fixed in SPI)
 
-#define RELAY_PIN         5
-
 #define THERMISTOR_PIN    A0
 
 #define TERMINATION_TIME  3600000UL    // 1 hour in miliseconds; flight for an hour
